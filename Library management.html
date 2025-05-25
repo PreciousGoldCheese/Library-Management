@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Global Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1c1b29, #3a3d62);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Form Styling */
+        input, button {
+            margin: 10px;
+            padding: 12px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+        input {
+            width: 22%;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        button {
+            background: #ff477e;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #ff2e63;
+            transform: scale(1.05);
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            font-size: 15px;
+        }
+        th {
+            background: #2a2d43;
+            color: #ff79c6;
+        }
+        td {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        td img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        td img:hover {
+            transform: scale(1.2);
+        }
+
+        /* Buttons */
+        .edit, .delete {
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: white;
+            transition: 0.3s;
+        }
+        .edit {
+            background: #f4a261;
+        }
+        .edit:hover {
+            background: #e76f51;
+        }
+        .delete {
+            background: #e63946;
+        }
+        .delete:hover {
+            background: #d62828;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="color:#ff79c6;">📚 Library Manager 📘</h1>
+        <input type="text" id="bookTitle" placeholder="Book Title">
+        <input type="text" id="author" placeholder="Author">
+        <input type="number" id="releaseYear" placeholder="Release Year">
+        <input type="file" id="bookCover" accept="image/*">
+        <button onclick="addBook()">➕ Add Book</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Cover</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Release Year</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody id="bookTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let books = [
+            { title: "1984", author: "George Orwell", year: "1949", cover: "img/book.jpg" },
+            { title: "To Kill a Mockingbird", author: "Harper Lee", year: "1960", cover: "img/book2.jpg" }
+        ];
+
+        function displayBooks() {
+            const table = document.getElementById("bookTable");
+            table.innerHTML = "";
+            books.forEach((book, index) => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><img src="${book.cover || 'https://via.placeholder.com/60'}" alt="Cover"></td>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.year}</td>
+                    <td><span class="edit" onclick="editBook(${index})">🖊️ Edit</span></td>
+                    <td><span class="delete" onclick="removeBook(${index})">🗑️ Delete</span></td>
+                `;
+                table.appendChild(row);
+            });
+        }
+
+        function addBook() {
+            let title = document.getElementById("bookTitle").value;
+            let author = document.getElementById("author").value;
+            let year = document.getElementById("releaseYear").value;
+            let fileInput = document.getElementById("bookCover");
+            let cover = "";
+
+            if (fileInput.files.length > 0) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    cover = e.target.result;
+                    books.push({ title, author, year, cover });
+                    displayBooks();
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                books.push({ title, author, year, cover: "https://via.placeholder.com/60" });
+                displayBooks();
+            }
+        }
+
+        function editBook(index) {
+            let newTitle = prompt("Enter new book title:", books[index].title);
+            if (newTitle) books[index].title = newTitle;
+            let newAuthor = prompt("Enter new author:", books[index].author);
+            if (newAuthor) books[index].author = newAuthor;
+            let newYear = prompt("Enter new release year:", books[index].year);
+            if (newYear) books[index].year = newYear;
+            displayBooks();
+        }
+
+        function removeBook(index) {
+            books.splice(index, 1);
+            displayBooks();
+        }
+
+        displayBooks();
+    </script>
+</body>
+</html>
